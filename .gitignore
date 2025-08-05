@@ -1,0 +1,6 @@
+node_modules/*
+/package-lock.json
+*.DS_Store
+yarn.lock
+.vscode/*
+public/upload/
