@@ -3,15 +3,17 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon -e html,css,js,json,env index.js"
   },
   "author": "rasoolabdi",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "auto-bind": "^5.0.1",
-    "dotenv": "^17.2.1",
+    "dotenv": "^16.6.1",
     "express": "^5.1.0",
+    "http-errors": "^2.0.0",
     "mongoose": "^8.17.0"
   }
 }
