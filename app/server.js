@@ -2,6 +2,8 @@ const express = require("express");
 const { config } = require("dotenv");
 const { default: mongoose } = require("mongoose");
 const createHttpError = require("http-errors");
+const swaggerConfig = require("./config/swagger.config");
+const { mainAllRoutes } = require("./modules/allRoutes");
 config();
 
 class Application {
@@ -33,10 +35,11 @@ class Application {
     async configServer() {
         this.#app.use(express.urlencoded({extended: true}));
         this.#app.use(express.json());
+        swaggerConfig(this.#app);
     }
 
     async configRoutes() {
-        this.#app.use("/api" , allRoutes);
+        this.#app.use("/api" , mainAllRoutes);
     }
 
     async errorHandling() {
