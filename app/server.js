@@ -1,9 +1,10 @@
 const express = require("express");
-const { config } = require("dotenv");
 const { default: mongoose } = require("mongoose");
 const createHttpError = require("http-errors");
 const swaggerConfig = require("./config/swagger.config");
 const { mainAllRoutes } = require("./modules/allRoutes");
+const cookieParser = require("cookie-parser");
+const { config } = require("dotenv");
 config();
 
 class Application {
@@ -36,6 +37,7 @@ class Application {
         this.#app.use(express.urlencoded({extended: true}));
         this.#app.use(express.json());
         swaggerConfig(this.#app);
+        this.#app.use(cookieParser(process.env.COOKIE_PARSER_SECRET_KEY))
     }
 
     async configRoutes() {

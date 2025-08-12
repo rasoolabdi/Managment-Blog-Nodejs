@@ -11,9 +11,11 @@
   "description": "",
   "dependencies": {
     "auto-bind": "^5.0.1",
+    "cookie-parser": "^1.4.7",
     "dotenv": "^16.6.1",
     "express": "^5.1.0",
     "http-errors": "^2.0.0",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.17.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
