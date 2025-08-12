@@ -4,7 +4,7 @@ const { config } = require("dotenv");
 const cookieParser = require("cookie-parser");
 const createHttpError = require("http-errors");
 const UserModel = require("./user.model");
-const { ValidationSignupSchema } = require("./auth.validation");
+const { ValidationSignupSchema, ValidationSigninSchema } = require("./auth.validation");
 config();
 const bcrypt = require("bcryptjs");
 const { StatusCodes: HttpStatus } = require("http-status-codes");
@@ -43,7 +43,49 @@ class UserAuthController extends Controller {
             })
         }
         catch(error) {
-            console.log(error);
+            next(error);
+        }
+    }
+
+    async signin(req , res , next) {
+        try {
+            await ValidationSigninSchema(req.body);
+            const {email , password} = req.body;
+
+            const existsUser = await this.checkUserExists(email);
+            if(!existsUser) {
+                throw createHttpError.BadRequest("ایمیل با کلمه عبور اشتباه است")
+            };
+
+            const validPassword = await bcrypt.compare(password , existsUser.password);
+            if(!validPassword) {
+                throw createHttpError.BadRequest("ایمیل یا کلمه عبور اشتباه است")
+            };
+
+            const {accessToken , refreshToken} = await this.generateTokens({userId: existsUser._id});
+            const cookieOptions = {
+                httpOnly: true,
+                signed: true,
+                sameSite: "lax",
+                secure: process.env.NODE_ENV === "development" ? false : true,
+                domain: process.env.DOMAIN
+            }
+
+            res.cookie("accessTokenBlog" , accessToken , cookieOptions);
+            res.cookie("refreshTokenBlog" , refreshToken , cookieOptions);
+
+            let WELLCOME_MESSAGE = "ورود با موفقیت انجام شد";
+            return res.status(HttpStatus.OK).json({
+                statusCode: HttpStatus.OK,
+                data: {
+                    message: WELLCOME_MESSAGE,
+                    existsUser,
+                    accessToken,
+                    refreshToken
+                }
+            })
+        }
+        catch(error) {
             next(error);
         }
     }

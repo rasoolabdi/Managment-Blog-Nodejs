@@ -25,6 +25,18 @@
  *                  password: 
  *                      type: string
  *                      description: password of user
+ *          SignIn:
+ *              type: object 
+ *              required: 
+ *                  -   email
+ *                  -   password
+ *              properties:
+ *                  email:
+ *                      type: string
+ *                      description: email of user
+ *                  password:
+ *                      type: string
+ *                      description: password of user
  */
 
 /**
@@ -46,6 +58,27 @@
  *          responses:
  *              201:
  *                 description: register user successfully
+ */
+
+/**
+ * @swagger
+ *  /api/auth/signin:
+ *      post:
+ *          tags: [Auth]
+ *          summary: "signin user"
+ *          description: "signin user"
+ *          requestBody:
+ *              required: true
+ *              content:
+ *                  application/x-www-form-urlencoded:
+ *                      schema:
+ *                          $ref: "#/components/schemas/SignIn"
+ *                  application/json:
+ *                      schema:
+ *                          $ref: "#/components/schemas/SignIn"
+ *          responses:
+ *              200:
+ *                  description: signin successfully
  */
 
 /**
