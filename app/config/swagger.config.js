@@ -13,7 +13,7 @@ function swaggerConfig(app) {
             components: {
                 securitySchemes: {
                     BearerAuth: {
-                        http: "http",
+                        type: "http",
                         scheme: "bearer",
                         bearerFormat: "JWT"
                     }
@@ -21,7 +21,7 @@ function swaggerConfig(app) {
             },
             security: [{ BearerAuth: [] }]
         },
-        apis: [process.cwd() + "/src/module/**/*.swagger.js"]
+        apis: [process.cwd() + "/app/modules/**/*.swagger.js"]
     });
     const swagger = swaggerUi.setup(SwaggerDocument , {});
     app.use("/swagger" , swaggerUi.serve , swagger);

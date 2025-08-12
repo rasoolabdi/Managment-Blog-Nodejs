@@ -1,15 +1,56 @@
-const Controller = require("../../controller");
+const Controller = require("../controller");
 const JWT = require("jsonwebtoken");
 const { config } = require("dotenv");
 const cookieParser = require("cookie-parser");
 const createHttpError = require("http-errors");
 const UserModel = require("./user.model");
+const { ValidationSignupSchema } = require("./auth.validation");
 config();
+const bcrypt = require("bcryptjs");
+const { StatusCodes: HttpStatus } = require("http-status-codes");
 
 
 class UserAuthController extends Controller {
     constructor() {
         super();
+    }
+
+    async signup(req,res,next) {
+        try {
+            await ValidationSignupSchema(req.body);
+            const { name , email , password } = req.body;
+            const existsUser = await this.checkUserExists(email);
+            if(existsUser) {
+                throw createHttpError.BadRequest("کاربری با این ایمیل وجود دارد")
+            };
+
+            const salt = await bcrypt.genSaltSync();
+            const hashPassword = await bcrypt.hashSync(password , salt);
+
+            const user = await UserModel.create({
+                name: name.trim(),
+                email: email.toLowerCase().trim(),
+                password: hashPassword
+            });
+
+            let WELLCOME_MESSAGE = "ثبت نام با موفقیت انجام شد"
+            return res.status(HttpStatus.CREATED).json({
+                statusCode: HttpStatus.CREATED,
+                data: {
+                    message: WELLCOME_MESSAGE,
+                    user
+                }
+            })
+        }
+        catch(error) {
+            console.log(error);
+            next(error);
+        }
+    }
+
+    async checkUserExists(email) {
+        const user = await UserModel.findOne({email});
+        return user;
     }
 
 
