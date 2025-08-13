@@ -5,6 +5,7 @@ const router = Router();
 
 router.post("/signup" , authController.signup);
 router.post("/signin" , authController.signin);
+router.post("/logout" , AuthGuard , authController.logout);
 router.get("/refresh-token" ,authController.verifyRefreshToken);
 
 module.exports = {

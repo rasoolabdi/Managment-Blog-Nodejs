@@ -92,3 +92,15 @@
  *              200:
  *                 description: create new accessToken and refreshToken successfully
  */
+
+/**
+ * @swagger
+ *  /api/auth/logout:
+ *      post:
+ *          tags: [Auth]
+ *          summary: logout of auth
+ *          discription: logout of auth
+ *          responses: 
+ *              200:
+ *                  description: logout successfully
+ */

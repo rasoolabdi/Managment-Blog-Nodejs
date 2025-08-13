@@ -15,17 +15,17 @@ class UserAuthController extends Controller {
         super();
     }
 
-    async signup(req,res,next) {
+    async signup(req, res, next) {
         try {
             await ValidationSignupSchema(req.body);
-            const { name , email , password } = req.body;
+            const { name, email, password } = req.body;
             const existsUser = await this.checkUserExists(email);
-            if(existsUser) {
+            if (existsUser) {
                 throw createHttpError.BadRequest("کاربری با این ایمیل وجود دارد")
             };
 
             const salt = await bcrypt.genSaltSync();
-            const hashPassword = await bcrypt.hashSync(password , salt);
+            const hashPassword = await bcrypt.hashSync(password, salt);
 
             const user = await UserModel.create({
                 name: name.trim(),
@@ -42,27 +42,27 @@ class UserAuthController extends Controller {
                 }
             })
         }
-        catch(error) {
+        catch (error) {
             next(error);
         }
     }
 
-    async signin(req , res , next) {
+    async signin(req, res, next) {
         try {
             await ValidationSigninSchema(req.body);
-            const {email , password} = req.body;
+            const { email, password } = req.body;
 
             const existsUser = await this.checkUserExists(email);
-            if(!existsUser) {
+            if (!existsUser) {
                 throw createHttpError.BadRequest("ایمیل با کلمه عبور اشتباه است")
             };
 
-            const validPassword = await bcrypt.compare(password , existsUser.password);
-            if(!validPassword) {
+            const validPassword = await bcrypt.compare(password, existsUser.password);
+            if (!validPassword) {
                 throw createHttpError.BadRequest("ایمیل یا کلمه عبور اشتباه است")
             };
 
-            const {accessToken , refreshToken} = await this.generateTokens({userId: existsUser._id});
+            const { accessToken, refreshToken } = await this.generateTokens({ userId: existsUser._id });
             const cookieOptions = {
                 httpOnly: true,
                 signed: true,
@@ -71,8 +71,8 @@ class UserAuthController extends Controller {
                 domain: process.env.DOMAIN
             }
 
-            res.cookie("accessTokenBlog" , accessToken , cookieOptions);
-            res.cookie("refreshTokenBlog" , refreshToken , cookieOptions);
+            res.cookie("accessTokenBlog", accessToken, cookieOptions);
+            res.cookie("refreshTokenBlog", refreshToken, cookieOptions);
 
             let WELLCOME_MESSAGE = "ورود با موفقیت انجام شد";
             return res.status(HttpStatus.OK).json({
@@ -85,13 +85,43 @@ class UserAuthController extends Controller {
                 }
             })
         }
+        catch (error) {
+            next(error);
+        }
+    }
+
+    async logout(req , res , next) {
+        try {
+            const cookieOptions = {
+                maxAge: 1,
+                expiresIn: Date.now(),
+                httpOnly: true,
+                signed: true,
+                secure: true,
+                sameSite: "lax",
+                path: "/",
+                domain: process.env.DOMAIN
+            };
+
+            res.cookie("accessTokenBlog" , null , cookieOptions);
+            res.cookie("refreshTokenBlog" , null , cookieOptions);
+
+            return res.status(HttpStatus.OK).json({
+                statusCode: HttpStatus.OK,
+                data: {
+                    message: "خروج با موفقیت انجام شد",
+                    auth: false
+                }
+            })
+        }
         catch(error) {
             next(error);
         }
     }
 
+
     async checkUserExists(email) {
-        const user = await UserModel.findOne({email});
+        const user = await UserModel.findOne({ email });
         return user;
     }
 
@@ -100,40 +130,40 @@ class UserAuthController extends Controller {
         const ACCESS_TOKEN_SECRET_KEY = process.env.ACCESS_TOKEN_SECRET_KEY;
         const REFRESH_TOKEN_SECRET_KEY = process.env.REFRESH_TOKEN_SECRET_KEY;
 
-        const accessToken = JWT.sign(payload , ACCESS_TOKEN_SECRET_KEY , {
+        const accessToken = JWT.sign(payload, ACCESS_TOKEN_SECRET_KEY, {
             expiresIn: "7d"
         });
 
-        const refreshToken = JWT.sign(payload , REFRESH_TOKEN_SECRET_KEY , {
+        const refreshToken = JWT.sign(payload, REFRESH_TOKEN_SECRET_KEY, {
             expiresIn: "30d"
         });
 
-        return {accessToken , refreshToken}
+        return { accessToken, refreshToken }
     };
 
 
-    async verifyRefreshToken(req , res , next) {
+    async verifyRefreshToken(req, res, next) {
         try {
             const refreshToken = req.signedCookies["refreshTokenBlog"];
-            const token = cookieParser.signedCookie(refreshToken , process.env.REFRESH_TOKEN_SECRET_KEY);
-            if(!token)  {
+            const token = cookieParser.signedCookie(refreshToken, process.env.REFRESH_TOKEN_SECRET_KEY);
+            if (!token) {
                 throw createHttpError.Unauthorized("لطفا وارد حساب کاربری خود شوید")
             };
 
-            const verified = JWT.verify(token , process.env.REFRESH_TOKEN_SECRET_KEY);
-            if(verified?.userId) {
+            const verified = JWT.verify(token, process.env.REFRESH_TOKEN_SECRET_KEY);
+            if (verified?.userId) {
                 const user = await UserModel.findById(verified?.userId);
-                if(!user) {
+                if (!user) {
                     throw createHttpError.Unauthorized("حساب کاربری یافت نشد")
                 };
-                const {accessToken , refreshToken} = await this.generateTokens({userId: user?._id});
+                const { accessToken, refreshToken } = await this.generateTokens({ userId: user?._id });
                 return res.json({
                     accessToken,
                     refreshToken
                 })
             }
         }
-        catch(error) {
+        catch (error) {
             next(error);
         }
     }
