@@ -83,14 +83,14 @@
 
 /**
  * @swagger
- *  /api/auth/refresh-token:
+ *  /api/auth/list:
  *      get:
  *          tags: [Auth]
- *          summary: refresh token
- *          description: create new accessToken and refreshToken
+ *          summary: get all users
+ *          description: get all list users
  *          responses:
  *              200:
- *                 description: create new accessToken and refreshToken successfully
+ *                  description: getAllUsers Successfully
  */
 
 /**
@@ -104,3 +104,16 @@
  *              200:
  *                  description: logout successfully
  */
+
+/**
+ * @swagger
+ *  /api/auth/refresh-token:
+ *      get:
+ *          tags: [Auth]
+ *          summary: refresh token
+ *          description: create new accessToken and refreshToken
+ *          responses:
+ *              200:
+ *                 description: create new accessToken and refreshToken successfully
+ */
+

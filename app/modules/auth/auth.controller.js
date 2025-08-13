@@ -90,6 +90,25 @@ class UserAuthController extends Controller {
         }
     }
 
+    async getAllUsers(req , res , next) {
+        try {
+            const users = await UserModel.find();
+            if(!users) {
+                throw createHttpError.BadRequest("هیچ کاربری یافت نشد")
+            };
+
+            return res.status(HttpStatus.OK).json({
+                statusCode: HttpStatus.OK,
+                data: {
+                    users
+                }
+            })
+        }
+        catch(error) {
+            next(error);
+        }
+    }
+
     async logout(req , res , next) {
         try {
             const cookieOptions = {
