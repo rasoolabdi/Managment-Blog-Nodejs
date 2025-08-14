@@ -6,6 +6,8 @@ const { mainAllRoutes } = require("./modules/allRoutes");
 const cookieParser = require("cookie-parser");
 const { config } = require("dotenv");
 config();
+const cors = require("cors");
+
 
 class Application {
     #app = express();
@@ -28,6 +30,10 @@ class Application {
 
     async createServer() {
         const PORT = process.env.PORT;
+        this.#app.use(cors({
+            origin: process.env.ALLOw_CORS_ORIGIN,
+            credentials: true
+        }))
         this.#app.listen(PORT, () => {
             console.log(`Application is running on port ${PORT}`)
         })
