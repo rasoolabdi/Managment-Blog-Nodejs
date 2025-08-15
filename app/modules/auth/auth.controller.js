@@ -6,6 +6,7 @@ const createHttpError = require("http-errors");
 const UserModel = require("./user.model");
 const { ValidationSignupSchema, ValidationSigninSchema, ValidationUpdateProfileSchema } = require("./auth.validation");
 config();
+const path = require("path");
 const bcrypt = require("bcryptjs");
 const { StatusCodes: HttpStatus } = require("http-status-codes");
 
@@ -126,6 +127,32 @@ class UserAuthController extends Controller {
                 statusCode: HttpStatus.OK,
                 data: {
                     message: "اطلاعات پروفایل با موفقیت آپدیت شد"
+                }
+            })
+        }
+        catch(error) {
+            next(error);
+        }
+    }
+
+    async updateAvatar(req , res , next) {
+        try {
+            const { _id: userId } = req.user;
+            const {fileUploadPath , filename} = req.body;
+            const fileAddress = path.join(fileUploadPath , filename);
+            const avatarUrl = fileAddress.replace(/\\/g , "/");
+
+            const updateAvatar = await UserModel.updateOne({ _id: userId } , { $set: {
+                avatar: avatarUrl
+            }});
+            if(updateAvatar.modifiedCount === 0) {
+                throw createHttpError.BadRequest("تصویر پروفایل آپدیت نشد")
+            };
+
+            return res.status(HttpStatus.OK).json({
+                statusCode: HttpStatus.OK,
+                data: {
+                    message: "تصویر پروفایل با موفقیت آپدیت شد"
                 }
             })
         }

@@ -56,6 +56,24 @@
 
 /**
  * @swagger
+ *  components:
+ *      schemas:
+ *          updateAvatar:
+ *              type: object
+ *              required:
+ *                  -   avatar
+ *              properties:
+ *                  avatar:
+ *                      type: file
+ *                      items:
+ *                          type: string
+ *                          format: binary
+ *                          description: update avatar profile user                     
+ * 
+ */
+
+/**
+ * @swagger
  *  /api/auth/signup:
  *      post:
  *          tags: [Auth]
@@ -131,6 +149,29 @@
  *          responses:
  *              200:
  *                  description: updateProfile Successfully
+ */
+
+/**
+ * @swagger
+ *  /api/auth/update-avatar/{id}:
+ *      patch:
+ *          tags: [Auth]
+ *          summary: update avatar
+ *          description: update avatar profile user
+ *          parameters:
+ *              -   name: id
+ *                  in: path
+ *                  type: string
+ *                  description: update avatar profile user
+ *          requestBody:
+ *              required: true
+ *              content:
+ *                  multipart/form-data:
+ *                      schema:
+ *                          $ref: "#/components/schemas/updateAvatar"
+ *          responses:
+ *              200:
+ *                  description: updateAvatar Successfully
  */
 
 /**
