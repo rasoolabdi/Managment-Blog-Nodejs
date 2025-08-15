@@ -128,16 +128,11 @@
 
 /**
  * @swagger
- *  /api/auth/update/{id}:
+ *  /api/auth/update:
  *      patch:
  *          tags: [Auth]
  *          summary: update profile
  *          description: update profile user by id
- *          parameters:
- *              -   name: id
- *                  in: path
- *                  type: string
- *                  description: id of user
  *          requestBody:
  *              content: 
  *                  application/x-www-form-urlencoded:
@@ -153,16 +148,11 @@
 
 /**
  * @swagger
- *  /api/auth/update-avatar/{id}:
+ *  /api/auth/update-avatar:
  *      patch:
  *          tags: [Auth]
  *          summary: update avatar
  *          description: update avatar profile user
- *          parameters:
- *              -   name: id
- *                  in: path
- *                  type: string
- *                  description: update avatar profile user
  *          requestBody:
  *              required: true
  *              content:
@@ -172,6 +162,18 @@
  *          responses:
  *              200:
  *                  description: updateAvatar Successfully
+ */
+
+/**
+ * @swagger
+ *  /api/auth/profile:
+ *      get:
+ *          tags: [Auth]
+ *          summary: profile user
+ *          description: get profile user
+ *          responses:
+ *              200:
+ *                  description: getProfile Successfully
  */
 
 /**

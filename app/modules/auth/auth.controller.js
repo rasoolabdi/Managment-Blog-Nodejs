@@ -161,6 +161,25 @@ class UserAuthController extends Controller {
         }
     }
 
+    async getUserProfile(req , res , next) {
+        try {
+            const {_id: userId} = req.user;
+            const profile = await UserModel.findById({_id: userId});
+            if(!profile) {
+                throw createHttpError.BadRequest("کاربری یافت نشد . لطفا مجدد سعی کنید")
+            };
+            return res.status(HttpStatus.OK).json({
+                statusCode: HttpStatus.OK,
+                data: {
+                    profile
+                }
+            })
+        }
+        catch(error) {
+            next(error);
+        }
+    }
+
     async logout(req , res , next) {
         try {
             const cookieOptions = {
