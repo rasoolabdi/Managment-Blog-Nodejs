@@ -41,6 +41,21 @@
 
 /**
  * @swagger
+ *  components:
+ *      schemas:
+ *          UpdateProfile:
+ *              type: object
+ *              properties:
+ *                  name:
+ *                      type: string
+ *                      description: name of user
+ *                  password:
+ *                      type: string
+ *                      description: password of user
+ */
+
+/**
+ * @swagger
  *  /api/auth/signup:
  *      post:
  *          tags: [Auth]
@@ -91,6 +106,31 @@
  *          responses:
  *              200:
  *                  description: getAllUsers Successfully
+ */
+
+/**
+ * @swagger
+ *  /api/auth/update/{id}:
+ *      patch:
+ *          tags: [Auth]
+ *          summary: update profile
+ *          description: update profile user by id
+ *          parameters:
+ *              -   name: id
+ *                  in: path
+ *                  type: string
+ *                  description: id of user
+ *          requestBody:
+ *              content: 
+ *                  application/x-www-form-urlencoded:
+ *                      schema:
+ *                          $ref: "#/components/schemas/UpdateProfile"
+ *                  application/json:
+ *                      schema:
+ *                          $ref: "#/components/schemas/UpdateProfile"
+ *          responses:
+ *              200:
+ *                  description: updateProfile Successfully
  */
 
 /**

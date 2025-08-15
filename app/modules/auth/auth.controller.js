@@ -4,7 +4,7 @@ const { config } = require("dotenv");
 const cookieParser = require("cookie-parser");
 const createHttpError = require("http-errors");
 const UserModel = require("./user.model");
-const { ValidationSignupSchema, ValidationSigninSchema } = require("./auth.validation");
+const { ValidationSignupSchema, ValidationSigninSchema, ValidationUpdateProfileSchema } = require("./auth.validation");
 config();
 const bcrypt = require("bcryptjs");
 const { StatusCodes: HttpStatus } = require("http-status-codes");
@@ -101,6 +101,31 @@ class UserAuthController extends Controller {
                 statusCode: HttpStatus.OK,
                 data: {
                     users
+                }
+            })
+        }
+        catch(error) {
+            next(error);
+        }
+    }
+
+    async updateProfile(req , res , next) {
+        try {
+            const { _id: userId } = req.user;
+            await ValidationUpdateProfileSchema(req.body);
+            const {name , password} = req.body;
+            const slat = await bcrypt.genSaltSync();
+            const hashPassword = await bcrypt.hashSync(password , slat);
+
+            const updateProfile = await UserModel.updateOne({_id: userId} , {$set: { name , password: hashPassword} });
+            if(updateProfile.modifiedCount === 0) {
+                throw createHttpError.BadRequest("ویرایش اطلاعات پروفایل انجام نشد")
+            };
+
+            return res.status(HttpStatus.OK).json({
+                statusCode: HttpStatus.OK,
+                data: {
+                    message: "اطلاعات پروفایل با موفقیت آپدیت شد"
                 }
             })
         }
