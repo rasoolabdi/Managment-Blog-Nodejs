@@ -97,3 +97,20 @@
  *              200:
  *                  description: list categories Successfully
  */
+
+/**
+ * @swagger
+ *  /api/category/remove/{id}:
+ *      delete:
+ *          tags: [Category]
+ *          summary: remove category
+ *          description: remove category by id
+ *          parameters:
+ *              -   name: id
+ *                  in: path
+ *                  type: string
+ *                  description: remove category by id
+ *          responses:
+ *              200:
+ *                  description: removeCategory Successfully
+ */

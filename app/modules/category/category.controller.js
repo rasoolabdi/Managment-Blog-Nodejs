@@ -85,6 +85,26 @@ class CategoryController extends Controller {
         }
     }
 
+    async removeCategoryById(req , res , next) {
+        try {
+            const {id} = req.params;
+            await this.checkExistsCategory(id);
+            const removeCategory = await CategoryModel.findByIdAndDelete(id);
+            if(removeCategory.modifiedCount === 0) {
+                throw createHttpError.BadRequest("دسته بندی با این شناسه حذف نشد")
+            };
+            return res.status(HttpStatus.OK).json({
+                statusCode: HttpStatus.OK,
+                data: {
+                    message: "دسته بندی با شناسه مورد نظر با موفقیت حذف شد"
+                }
+            })
+        }
+        catch(error) {
+            next(error);
+        }
+    }
+
     async findCategoryWithTitle(englishTitle) {
         const category = await CategoryModel.findOne({englishTitle});
         if(category) {
