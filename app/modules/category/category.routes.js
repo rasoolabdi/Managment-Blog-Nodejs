@@ -5,6 +5,7 @@ const categoryController = require("./category.controller");
 const router = Router();
 
 router.post("/add" , AuthGuard , expressAsyncHandler(categoryController.addNewCategory));
+router.patch("/update/:id" , AuthGuard , expressAsyncHandler(categoryController.updateCategory));
 
 module.exports = {
     CategoryRoutesApi: router

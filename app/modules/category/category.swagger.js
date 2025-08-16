@@ -25,6 +25,18 @@
  *                  description:
  *                      type: string
  *                      description: description of category
+ *          updateCategory:
+ *              type: object
+ *              properties:
+ *                  title:
+ *                      type: string
+ *                      description: title persian of category
+ *                  englishTitle:
+ *                      type: string
+ *                      description: englishTitle of category
+ *                  description:
+ *                      type: string
+ *                      description: description of category
  */
 
 /**
@@ -47,4 +59,29 @@
  *              201:
  *                  description: addCategory Successfully
  * 
+ */
+
+/**
+ * @swagger
+ *  /api/category/update/{id}:
+ *      patch:
+ *          tags: [Category]
+ *          summary: update category
+ *          description: update category by id
+ *          parameters:
+ *              -   name: id
+ *                  in: path
+ *                  type: string
+ *                  description: id of category
+ *          requestBody:
+ *              content:
+ *                  application/x-www-form-urlencoded:
+ *                      schema:
+ *                          $ref: "#/components/schemas/updateCategory"
+ *                  application/json:
+ *                      schema:
+ *                          $ref: "#/components/schemas/updateCategory"
+ *          responses:
+ *              200:
+ *                  description: update category Successfully
  */

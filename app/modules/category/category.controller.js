@@ -3,7 +3,7 @@ const Controller = require("../controller");
 const CategoryModel = require("./category.model");
 const { default: slugify } = require("slugify");
 const {StatusCodes: HttpStatus} = require("http-status-codes");
-const { AddNewCategorySchema } = require("./category.validation");
+const { AddNewCategorySchema, UpdateCategorySchema } = require("./category.validation");
 
 class CategoryController extends Controller {
     constructor() {
@@ -35,6 +35,35 @@ class CategoryController extends Controller {
         }
         catch(error) {
             next(error)
+        }
+    }
+
+    async updateCategory(req , res , next) {
+        try {
+            const { id } = req.params;
+            const { title , englishTitle , description } = req.body;
+            await UpdateCategorySchema(req.body);
+            await this.checkExistsCategory(id);
+            const updateCategory = await CategoryModel.updateOne({_id: id} , {
+                $set: {
+                    title,
+                    englishTitle,
+                    description,
+                    slug: slugify(englishTitle)
+                }
+            });
+            if(updateCategory.modifiedCount === 0) {
+                throw createHttpError.InternalServerError("به روز رسانی دسته بندی مورد نظر انجام نشد")
+            }
+            return res.status(HttpStatus.OK).json({
+                statusCode: HttpStatus.OK,
+                data: {
+                    message: "دسته بندی مورد نظر بت موفقیت آپدیت شد",
+                }
+            })
+        }
+        catch(error) {
+            next(error);
         }
     }
 
