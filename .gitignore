@@ -5,3 +5,4 @@ yarn.lock
 .vscode/*
 public/upload/
 .env
+uploads/avatar/*
