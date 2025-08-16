@@ -85,3 +85,15 @@
  *              200:
  *                  description: update category Successfully
  */
+
+/**
+ * @swagger
+ *  /api/category/list:
+ *      get:
+ *         tags: [Category]
+ *         summary: get categories
+ *         description: get all list categories
+ *         responses:
+ *              200:
+ *                  description: list categories Successfully
+ */

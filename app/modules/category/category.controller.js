@@ -67,6 +67,24 @@ class CategoryController extends Controller {
         }
     }
 
+    async getAllCategories(req , res , next) {
+        try {
+            const categories = await CategoryModel.find();
+            if(!categories) {
+                throw createHttpError.BadRequest("دسته بندی ها یافت نشدند")
+            };
+            return res.status(HttpStatus.OK).json({
+                statusCode: HttpStatus.OK,
+                data: {
+                    categories
+                }
+            })
+        }
+        catch(error) {
+            next(error);
+        }
+    }
+
     async findCategoryWithTitle(englishTitle) {
         const category = await CategoryModel.findOne({englishTitle});
         if(category) {
