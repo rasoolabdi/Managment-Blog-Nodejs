@@ -6,6 +6,8 @@ const { uploadFile } = require("../../utils/multer");
 const router = Router();
 
 router.post("/add" , AuthGuard , uploadFile.single("coverImage") , expressAsyncHandler(postController.addNewPost));
+router.patch("/update/:id" , AuthGuard , uploadFile.single("coverImage") , expressAsyncHandler(postController.updatePost));
+
 
 module.exports = {
     postRoutesApi: router
