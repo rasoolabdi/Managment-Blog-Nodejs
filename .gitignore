@@ -6,3 +6,4 @@ yarn.lock
 public/upload/
 .env
 uploads/avatar/*
+coverImage/*
