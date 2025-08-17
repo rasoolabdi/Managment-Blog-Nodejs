@@ -118,6 +118,26 @@ class PostController extends Controller {
         }
     };
 
+    async removePostById(req , res , next) {
+        try {
+            const {id} = req.params;
+            await this.findPostById(id);
+            const deleteResult = await PostModel.findByIdAndDelete(id);
+            if(!deleteResult) {
+                throw createHttpError.BadRequest("پست با شناسه مورد نظر حذف نشد")
+            };
+            return res.status(HttpStatus.OK).json({
+                statusCode: HttpStatus.OK,
+                data: {
+                    message: "پست با شناسه مورد نظر با موفقیت حذف شد"
+                }
+            })
+        }
+        catch(error) {
+            next(error);
+        }
+    }
+
     async findPostById(id) {
         if(!mongoose.isValidObjectId(id)) {
             throw createHttpError.BadRequest("شناسه پست معتبر نمی باشد")

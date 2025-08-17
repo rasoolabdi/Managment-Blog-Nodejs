@@ -144,3 +144,22 @@
  *              200:
  *                  description: updatePost Successfully
  */
+
+/**
+ * @swagger
+ *  /api/post/remove/{id}:
+ *      delete:
+ *              tags: [Post]
+ *              summary: remove post
+ *              description: remove post by id
+ *              parameters:
+ *                  -   name: id
+ *                      in: path
+ *                      required: true
+ *                      type: string
+ *                      description: id of post
+ *              responses:
+ *                  200:
+ *                      description: removePost Successfully
+ *                  
+ */

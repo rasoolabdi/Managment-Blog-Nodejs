@@ -7,7 +7,7 @@ const router = Router();
 
 router.post("/add" , AuthGuard , uploadFile.single("coverImage") , expressAsyncHandler(postController.addNewPost));
 router.patch("/update/:id" , AuthGuard , uploadFile.single("coverImage") , expressAsyncHandler(postController.updatePost));
-
+router.delete("/remove/:id" , AuthGuard , expressAsyncHandler(postController.removePostById));
 
 module.exports = {
     postRoutesApi: router
