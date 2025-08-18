@@ -3,7 +3,7 @@ node_modules/*
 *.DS_Store
 yarn.lock
 .vscode/*
-public/upload/
 .env
-uploads/avatar/*
+uploads/*
 uploads/coverImage/*
+uploads/coverImage

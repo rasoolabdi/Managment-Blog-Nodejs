@@ -6,6 +6,7 @@ const {StatusCodes: HttpStatus} = require("http-status-codes");
 const { AddNewPostValidation, UpdatePostValidation } = require("./post.validation");
 const { default: mongoose } = require("mongoose");
 const { copyObject, deleteInvalidPropertiesInObject } = require("../../utils/functions");
+const UserModel = require("../auth/user.model");
 
 class PostController extends Controller {
     constructor() {
@@ -154,6 +155,49 @@ class PostController extends Controller {
         }
         catch(error) {
             next(error)
+        }
+    }
+
+    async likePost(req , res , next) {
+        try {
+            const user = req.user;
+            const { id: postId } = req.params;
+            const post = await this.findPostById(postId);
+            const likedPost = await PostModel.findOne({
+                _id: postId,
+                likes: user._id
+            });
+
+            const updatePostQuery = likedPost 
+                ? {$pull: {likes: user._id} }
+                : {$push: {likes: user._id} };
+
+            const updateUserQuery = likedPost
+                ? {$pull: {likedPosts: post._id} }
+                : {$push: {likedPosts: post._id} };
+
+            const updatePost  = await PostModel.updateOne({_id: postId} , updatePostQuery);
+            const updateUser = await UserModel.updateOne({_id: user._id} , updateUserQuery);
+
+            if(updatePost.modifiedCount === 0 || updateUser.modifiedCount === 0) {
+                throw createHttpError.BadRequest("عملیات ناموفق بود")
+            };
+            let MessageLike = "";
+            if(!likedPost) {
+                MessageLike = "پست لایک شد"
+            }
+            else {
+                MessageLike = "لایک پست برداشته شد"
+            }
+            return res.status(HttpStatus.OK).json({
+                statusCode: HttpStatus.OK,
+                data: {
+                    message: MessageLike
+                }
+            })
+        }
+        catch(error) {
+            next(error);
         }
     }
 

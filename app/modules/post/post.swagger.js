@@ -180,3 +180,20 @@
  *              200:
  *                  description: getPost Successfully
  */
+
+/**
+ * @swagger
+ *  /api/post/like/{id}:
+ *      post:
+ *          tags: [Post]
+ *          summary: like post
+ *          description: like post by id
+ *          parameters:
+ *              -   name: id
+ *                  in: path
+ *                  type: string
+ *                  description: id of post
+ *          responses:
+ *              200:
+ *                  description: like post Successfully
+ */
