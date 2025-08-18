@@ -163,3 +163,20 @@
  *                      description: removePost Successfully
  *                  
  */
+
+/**
+ * @swagger
+ *  /api/post/{id}:
+ *      get:
+ *          tags: [Post]
+ *          summary: get post
+ *          description: get post by id
+ *          parameters:
+ *              -   name: id
+ *                  in: path
+ *                  type: string
+ *                  description: id of post
+ *          responses:
+ *              200:
+ *                  description: getPost Successfully
+ */

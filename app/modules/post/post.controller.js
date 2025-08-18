@@ -138,6 +138,25 @@ class PostController extends Controller {
         }
     }
 
+    async getPostById(req , res ,next) {
+        try {
+            const {id} = req.params;
+            const post = await PostModel.findById(id);
+            if(!post) {
+                throw createHttpError.BadRequest("پستی با این شناسه یافت نشد")
+            }
+            return res.status(HttpStatus.OK).json({
+                statusCode: HttpStatus.OK,
+                data: {
+                    post
+                }
+            })
+        }
+        catch(error) {
+            next(error)
+        }
+    }
+
     async findPostById(id) {
         if(!mongoose.isValidObjectId(id)) {
             throw createHttpError.BadRequest("شناسه پست معتبر نمی باشد")
