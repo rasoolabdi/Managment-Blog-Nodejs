@@ -197,3 +197,20 @@
  *              200:
  *                  description: like post Successfully
  */
+
+/**
+ * @swagger
+ *  /api/post/bookmark/{id}:
+ *      post:
+ *          tags: [Post]
+ *          summary: bookmark post
+ *          description: bookmark post by id
+ *          parameters:
+ *              -   name: id
+ *                  in: path
+ *                  type: string
+ *                  description: id of post
+ *          responses:
+ *              200:
+ *                  description: bookmarked successfully
+ */

@@ -10,7 +10,7 @@ router.patch("/update/:id" , AuthGuard , uploadFile.single("coverImage") , expre
 router.delete("/remove/:id" , AuthGuard , expressAsyncHandler(postController.removePostById));
 router.get("/:id" , AuthGuard , expressAsyncHandler(postController.getPostById));
 router.post("/like/:id" , AuthGuard , expressAsyncHandler(postController.likePost));
-
+router.post("/bookmark/:id" , AuthGuard , expressAsyncHandler(postController.bookmarkPost));
 
 module.exports = {
     postRoutesApi: router

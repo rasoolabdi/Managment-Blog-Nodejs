@@ -201,6 +201,50 @@ class PostController extends Controller {
         }
     }
 
+    async bookmarkPost(req , res , next) {
+        try {
+            const {id: postId} = req.params;
+            const user = req.user;
+            const post = await PostModel.findById(postId);
+            const bookmarkedPost = await PostModel.findOne({
+                _id: postId,
+                bookmarks: user._id
+            });
+
+            const updatePostBookmark = bookmarkedPost
+                ? {$pull: {bookmarks: user._id} }
+                : {$push: {bookmarks: user._id} }
+
+            const updateUserBookmark = bookmarkedPost
+                ?  {$pull: {bookmarkedPosts: post._id} } 
+                :  {$push: {bookmarkedPosts: post._id} }
+
+            const updatePost = await PostModel.updateOne({_id: postId} , updatePostBookmark);
+            const updateUser = await UserModel.updateOne({_id: user._id} , updateUserBookmark);
+            if(updatePost.modifiedCount === 0 || updateUser.modifiedCount === 0) {
+                throw createHttpError.BadRequest("عملیات ناموفق بود")
+            }
+
+            let MessageBookmark;
+            if(!bookmarkedPost) {
+                MessageBookmark = "پست بوکمارک شد"
+            }
+            else {
+                MessageBookmark = "بوکمارک پست برداشته شد"
+            };
+            return res.status(HttpStatus.OK).json({
+                statusCode: HttpStatus.OK,
+                data: {
+                    message: MessageBookmark
+                }
+            })
+        }
+        catch(error) {
+            console.log(error)
+            next(error);
+        }
+    }
+
     async findPostById(id) {
         if(!mongoose.isValidObjectId(id)) {
             throw createHttpError.BadRequest("شناسه پست معتبر نمی باشد")
