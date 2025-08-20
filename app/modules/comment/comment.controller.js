@@ -43,7 +43,7 @@ class CommentController extends Controller {
                 return res.status(HttpStatus.CREATED).json({
                     statusCode: HttpStatus.CREATED,
                     data: {
-                        message: "پاسخ پست با موفقیت ثبت شد . پس ازتایید قابل مشاهده است"
+                        message: "پاسخ کامنت با موفقیت ثبت شد . پس ازتایید قابل مشاهده است"
                     }
                 })
             }
@@ -111,6 +111,42 @@ class CommentController extends Controller {
         }
         catch(error) {
             next(error)
+        }
+    }
+
+    async removeComment(req , res , next) {
+        try {
+            const { id } = req.params;
+            const comment = await this.findCommentById(id);
+            if(comment && comment.openToComment) {
+                const removeResult = await CommentModel.findByIdAndDelete({_id: id});
+                if(removeResult.modifiedCount === 0) {
+                    throw createHttpError.BadRequest("کامنت مورد نظر حذف نشد")
+                }
+                return res.status(HttpStatus.OK).json({
+                    statusCode: HttpStatus.OK,
+                    data: {
+                        message: "کامنت مورد نظر با موفقیت حذف شد"
+                    }
+                })
+            }
+            else {
+                const answerRemove = await CommentModel.updateOne({"answers._id": id} , {
+                    $pull: {answers: {_id: id}}
+                });
+                if(answerRemove.modifiedCount === 0) {
+                    throw createHttpError.BadRequest("پاسخ کامنت حذف نشد")
+                }
+                return res.status(HttpStatus.OK).json({
+                    statusCode: HttpStatus.OK,
+                    data: {
+                        message: "پاسخ کامنت با موفقیت حذف شد"
+                    }
+                })
+            }
+        }
+        catch(error) {
+            next(error);
         }
     }
 

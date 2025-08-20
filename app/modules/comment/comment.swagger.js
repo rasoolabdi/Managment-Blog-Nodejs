@@ -86,3 +86,20 @@
  *              200:
  *                  description: updateComment Successfully
  */
+
+/**
+ * @swagger
+ *  /api/comment/remove/{id}:
+ *      delete:
+ *              tags: [Comment]
+ *              summary: remove comment
+ *              description: remove comment by id
+ *              parameters:
+ *                  -   name: id
+ *                      in: path
+ *                      type: string
+ *                      description: id of comment
+ *              responses:
+ *                  200:
+ *                      description: remove comment successfully
+ */
