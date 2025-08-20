@@ -73,6 +73,47 @@ class CommentController extends Controller {
         }
     }
 
+    async updateComment(req , res , next) {
+        try {
+            const { id } = req.params;
+            const { status } = req.body;
+            const comment = await this.findCommentById(id);
+            if(comment && comment.openToComment) {
+                const updateComment = await CommentModel.updateOne({_id: id} , {
+                    $set: { status }
+                });
+                if(updateComment.modifiedCount === 0) {
+                    throw createHttpError.BadRequest("وضعیت کامنت آپدیت نشد")
+                }
+                return res.status(HttpStatus.OK).json({
+                    statusCode: HttpStatus.OK,
+                    data: {
+                        message: "وضعیت کامنت با موفقیت آپدیت شد"
+                    }
+                })
+            }
+            else {
+                const updateResult = await CommentModel.updateOne({"answers._id": id} , {
+                    $set: {
+                        "$answers.$.status": status
+                    }
+                });
+                if(updateResult.modifiedCount === 0) {
+                    throw createHttpError.BadRequest("وضعیت پاسخ کامنت آپدیت نشد")
+                }
+                return res.status(HttpStatus.OK).json({
+                    statusCode: HttpStatus.OK,
+                    data: {
+                        message: "وضعیت پاسخ کامنت با موفقیت آپدیت شد"
+                    }
+                })
+            }
+        }
+        catch(error) {
+            next(error)
+        }
+    }
+
     async findCommentById(id) {
         const commentFindResult = await CommentModel.aggregate([
             {

@@ -27,6 +27,21 @@
 
 /**
  * @swagger
+ *  components:
+ *      schemas:
+ *          UpdateStatusComment:
+ *              type: object
+ *              required:
+ *                  -   status
+ *              properties:
+ *                  status:
+ *                      type: number
+ *                      enum: [0,1,2]
+ *                      description: status of comment
+*/
+
+/**
+ * @swagger
  *  /api/comment/add:
  *      post:
  *          tags: [Comment]
@@ -44,4 +59,30 @@
  *          responses:
  *              201:
  *                  description: AddNewComment Successfully
+ */
+
+/**
+ * @swagger
+ *  /api/comment/update/{id}:
+ *      patch:
+ *          tags: [Comment]
+ *          summary: update comment
+ *          description: update comment by id
+ *          parameters:
+ *              -   name: id
+ *                  in: path
+ *                  type: string
+ *                  description: id of comment
+ *          requestBody:
+ *              required: true
+ *              content:
+ *                  application/x-www-form-urlencoded:
+ *                      schema:
+ *                          $ref: "#/components/schemas/UpdateStatusComment"
+ *                  application/json:
+ *                      schema:
+ *                          $ref: "#/components/schemas/UpdateStatusComment"
+ *          responses:
+ *              200:
+ *                  description: updateComment Successfully
  */
