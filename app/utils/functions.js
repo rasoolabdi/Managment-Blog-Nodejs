@@ -1,3 +1,6 @@
+const createHttpError = require("http-errors");
+const { default: mongoose } = require("mongoose");
+const PostModel = require("../modules/post/post.model");
 
 
 function deleteInvalidPropertiesInObject(data = {} , blackListFields = []) {
@@ -22,7 +25,19 @@ function copyObject(object) {
     return JSON.parse(JSON.stringify(object))
 };
 
+async function checkPostExist(id) {
+    if(!mongoose.isValidObjectId(id)) {
+        throw createHttpError.BadRequest("شناسه پست ارسال شده صحیح نمی باشد")
+    }
+    const post = await PostModel.findById(id);
+    if(!post) {
+        throw createHttpError.NotFound("پستی با این شناسه یافت نشد")
+    };
+    return post;
+}
+
 module.exports = {
     deleteInvalidPropertiesInObject,
-    copyObject
+    copyObject,
+    checkPostExist
 };

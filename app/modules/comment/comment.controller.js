@@ -1,7 +1,7 @@
 const { default: mongoose } = require("mongoose");
 const Controller = require("../controller");
 const CommentModel = require("./comment.model");
-const { copyObject } = require("../../utils/functions");
+const { copyObject, checkPostExist } = require("../../utils/functions");
 const createHttpError = require("http-errors");
 const ObjectId = new mongoose.Types.ObjectId();
 const { StatusCodes: HttpStatus } = require("http-status-codes");
@@ -20,7 +20,7 @@ class CommentController extends Controller {
             const content = { text };
             const status = 1;
             await AddNewCommentVlidation({ content , postId });
-
+            await checkPostExist(postId);
             if(parentId && mongoose.isValidObjectId(parentId)) {
                 const parentComment = await this.findCommentById(parentId);
                 if(parentComment && !parentComment?.openToComment) {
