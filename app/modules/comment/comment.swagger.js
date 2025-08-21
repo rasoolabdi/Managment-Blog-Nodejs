@@ -103,3 +103,15 @@
  *                  200:
  *                      description: remove comment successfully
  */
+
+/**
+ * @swagger
+ *  /api/comment/all:
+ *      get:
+ *          tags: [Comment]
+ *          summary: get comments
+ *          description: get all comments
+ *          responses:
+ *              200:
+ *                  description: get All Comment Successfully
+ */

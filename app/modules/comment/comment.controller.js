@@ -68,7 +68,6 @@ class CommentController extends Controller {
             }
         }
         catch(error) {
-            console.log(error);
             next(error);
         }
     }
@@ -144,6 +143,29 @@ class CommentController extends Controller {
                     }
                 })
             }
+        }
+        catch(error) {
+            next(error);
+        }
+    }
+
+    async getAllComments(req , res , next) {
+        try {
+            const comments = await CommentModel.find({}).populate([
+                {path: "user" , model: "user" , select: {name: 1}},
+                {path: "answers.user" , model: "user" , select: {name: 1}}
+            ]).sort({ createdAt: -1});
+            if(!comments) {
+                throw createHttpError.BadRequest("هیچ کامنتی یافت نشد")
+            };
+            const commentsCount = comments.length && comments.reduce((acc , curr) => acc + curr.answers.length , 0);
+            return res.status(HttpStatus.OK).json({
+                statusCode: HttpStatus.OK,
+                data: {
+                    comments,
+                    commentsCount
+                }
+            })
         }
         catch(error) {
             next(error);
