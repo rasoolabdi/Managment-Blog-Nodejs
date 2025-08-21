@@ -8,6 +8,7 @@ router.post("/add" , AuthGuard , expressAsyncHandler(commentController.addNewCom
 router.patch("/update/:id" , AuthGuard , expressAsyncHandler(commentController.updateComment));
 router.delete("/remove/:id" , AuthGuard , expressAsyncHandler(commentController.removeComment));
 router.get("/all" , AuthGuard , expressAsyncHandler(commentController.getAllComments));
+router.get("/:id" , AuthGuard , expressAsyncHandler(commentController.getCommentById));
 
 module.exports = {
     commentRoutesApi: router

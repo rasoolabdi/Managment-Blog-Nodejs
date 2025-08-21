@@ -115,3 +115,20 @@
  *              200:
  *                  description: get All Comment Successfully
  */
+
+/**
+ * @swagger
+ *  /api/comment/{id}:
+ *      get:
+ *          tags: [Comment]
+ *          summary: get comment
+ *          description: get comment by id
+ *          parameters:
+ *              -   name: id
+ *                  in: path
+ *                  type: string
+ *                  description: id of comment
+ *          responses:
+ *              200:
+ *                  description: getOneComment Successfully
+ */

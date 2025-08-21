@@ -172,6 +172,26 @@ class CommentController extends Controller {
         }
     }
 
+    async getCommentById(req , res , next) {
+        try {
+            const {id} = req.params;
+            await this.findCommentById(id);
+            const comment = await CommentModel.findById({_id: id}).populate([
+                {path: "user" , model: "user" , select: {name: 1}},
+                {path: "answers.user" , model: "user" , select: {name: 1}}
+            ]).sort({ createdAt: -1});
+            return res.status(HttpStatus.OK).json({
+                statusCode: HttpStatus.OK,
+                data: {
+                    comment
+                }
+            });
+        }
+        catch(error) {
+            next(error);
+        }
+    }
+
     async findCommentById(id) {
         const commentFindResult = await CommentModel.aggregate([
             {
