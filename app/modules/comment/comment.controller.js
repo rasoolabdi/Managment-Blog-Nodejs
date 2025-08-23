@@ -1,7 +1,7 @@
 const { default: mongoose } = require("mongoose");
 const Controller = require("../controller");
 const CommentModel = require("./comment.model");
-const { copyObject, checkPostExist } = require("../../utils/functions");
+const { copyObject, checkPostExist, calcuteDateDuration } = require("../../utils/functions");
 const createHttpError = require("http-errors");
 const ObjectId = new mongoose.Types.ObjectId();
 const { StatusCodes: HttpStatus } = require("http-status-codes");
@@ -190,6 +190,160 @@ class CommentController extends Controller {
         catch(error) {
             next(error);
         }
+    }
+
+    async findAcceptedComments(id , status = 2) {
+        const acceptedComments = await CommentModel.aggregate([
+            {
+                $match: {
+                    post: new mongoose.Types.ObjectId(id),
+                    status
+                }
+            },
+            {
+                $project: {
+                    status: 1,
+                    _id: 1,
+                    openToComment: 1,
+                    content: 1,
+                    user: 1,
+                    createdAt: 1,
+                    answers: {
+                        $filter: {
+                            input: "$answers",
+                            as: "answers",
+                            cond: {
+                                $eq: ["answers.status" , status]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "user",
+                    foreignField: "_id",
+                    as: "user",
+                    pipeline: [
+                        {
+                            $project: { name: 1 , biography: 1 , avatar: 1}
+                        }
+                    ]
+                }
+            },
+            {
+                $addFields: {
+                    user: {
+                        $map: {
+                            input: "$user",
+                            as: "item",
+                            in: {
+                                $mergeObjects: [
+                                    "$$item",
+                                    {
+                                        avatarUrl: {
+                                            $concat: [process.env.SERVER_URL , "/" , "$$item.avatar"]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                $unwind: {
+                    path: "$user"
+                }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "answers.user",
+                    foreignField: "_id",
+                    as: "answerWriter",
+                    pipeline: [
+                        {
+                            $project: {name: 1 , biography: 1, avatar: 1}
+                        }
+                    ]
+                }
+            },
+            {
+                $addFields: {
+                    answerWriter: {
+                        $map: {
+                            input: "$answerWriter",
+                            as: "item",
+                            in: {
+                                $mergeObjects: [
+                                    "$$item",
+                                    {
+                                        avatarUrl: {
+                                            $concat: [process.env.SERVER_URL , "/" , "$$item.avatar"]
+                                        }
+                                    }
+                                ]
+                            }   
+                        }
+                    }
+                }
+            },
+            {
+                $project: {
+                    content: 1,
+                    user: 1,
+                    status: 1,
+                    openToComment: 1,
+                    createdAt: 1,
+                    _id: 1,
+                    answers: {
+                        $map: {
+                            input: "$answers",
+                            as: "item",
+                            in: {
+                                content: "$$item.content",
+                                status: "$$item.status",
+                                openToComment: "$$item.openToComment",
+                                createdAt: "$$item.createdAt",
+                                _id: "$$item._id",
+                                user: {
+                                    $arrayElemAt: [
+                                        {
+                                            $filter: {
+                                                input: "$answerWriter",
+                                                as: "writer",
+                                                cond: {
+                                                    $eq: ["$$writer._id" , "$$item.user"],
+                                                }
+                                            }
+                                        },
+                                        0,
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                $sort: {
+                    createdAt: -1
+                }
+            }
+        ]);
+
+        const transformed = acceptedComments.map((c) => {
+            return {
+                ... c,
+                createdAt: calcuteDateDuration(c.createdAt),
+                answers: c.answers.map((c) => {
+                    return {...c , createdAt: calcuteDateDuration(c.createdAt)};
+                })
+            }
+        });
+        return copyObject(transformed);
     }
 
     async findCommentById(id) {

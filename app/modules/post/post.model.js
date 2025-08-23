@@ -23,5 +23,10 @@ const PostSchema = new mongoose.Schema({
     }
 });
 
+PostSchema.virtual("coverImageUrl").get(function() {
+    if(this.coverImage) return `${process.env.SERVER_URL}/${this.coverImage}`;
+    return null;
+})
+
 const PostModel = model("post" , PostSchema);
 module.exports = PostModel;

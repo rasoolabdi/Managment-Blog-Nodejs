@@ -4,9 +4,11 @@ const path = require("path");
 const PostModel = require("./post.model");
 const {StatusCodes: HttpStatus} = require("http-status-codes");
 const { AddNewPostValidation, UpdatePostValidation } = require("./post.validation");
-const { default: mongoose } = require("mongoose");
+const { default: mongoose, model } = require("mongoose");
 const { copyObject, deleteInvalidPropertiesInObject } = require("../../utils/functions");
 const UserModel = require("../auth/user.model");
+const commentController = require("../comment/comment.controller");
+const { transformPost } = require("../../utils/transformPost");
 
 class PostController extends Controller {
     constructor() {
@@ -241,6 +243,47 @@ class PostController extends Controller {
         }
         catch(error) {
             console.log(error)
+            next(error);
+        }
+    }
+
+    async getPostBySlug(req , res , next) {
+        try {
+            const { slug } = req.params;
+            const user = req.user;
+            const post = await PostModel.findOne({ slug }).populate([
+                {path: "author" , model: "user" , select: {name: 1, biography: 1 , avatar: 1}},
+                {path: "category" , model: "category" , select: {title: 1, slug: 1}},
+                {path: "related" , model: "post" , select: {title: 1, slug: 1 , briefText: 1, coverImage: 1, author: 1},
+                    populate: [
+                        {path: "author" , model: "user" , select: {name: 1 , biography: 1 , avatar: 1}},
+                        {path: "category" , model: "category" , select: {title: 1 , slug: 1}}
+                    ]
+                }
+            ]);
+            console.log(post);
+            if(!post) {
+                throw createHttpError.NotFound("پستی با این مشخصات یافت نشد")
+            };
+            const {id: postId} = post;
+            const acceptedComments = await commentController.findAcceptedComments(postId);
+            const transformedPost = copyObject(post);
+            transformedPost.comments = acceptedComments;
+            transformedPost.commentCount = acceptedComments.length + acceptedComments.reduce((acc , curr) =>
+                acc + curr.answers.length , 0
+            );
+            await transformPost(transformedPost , user);
+            
+            return res.status(HttpStatus.OK).json({
+                statusCode: HttpStatus.OK,
+                data: {
+                    post: transformedPost
+                }
+            })
+
+        }
+        catch(error) {
+            console.log(error);
             next(error);
         }
     }

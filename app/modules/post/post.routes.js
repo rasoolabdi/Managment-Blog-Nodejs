@@ -11,6 +11,7 @@ router.delete("/remove/:id" , AuthGuard , expressAsyncHandler(postController.rem
 router.get("/:id" , AuthGuard , expressAsyncHandler(postController.getPostById));
 router.post("/like/:id" , AuthGuard , expressAsyncHandler(postController.likePost));
 router.post("/bookmark/:id" , AuthGuard , expressAsyncHandler(postController.bookmarkPost));
+router.get("/slug/:slug" , AuthGuard , expressAsyncHandler(postController.getPostBySlug));
 
 module.exports = {
     postRoutesApi: router

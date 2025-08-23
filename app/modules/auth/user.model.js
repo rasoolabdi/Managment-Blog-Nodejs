@@ -17,5 +17,17 @@ const UserSchema = new mongoose.Schema({
     }
 });
 
+UserSchema.virtual("avatarUrl").get(function() {
+    if(this.avatar) return `${process.env.SERVER_URL}/${this.avatar}`;
+    return null;
+});
+
+UserSchema.methods.toJSON = function() {
+    const obj = this.toObject();
+    obj.avatarUrl = this.avatarUrl;
+    delete obj.password;
+    return obj;
+};
+
 const UserModel = model("user" , UserSchema);
 module.exports = UserModel;

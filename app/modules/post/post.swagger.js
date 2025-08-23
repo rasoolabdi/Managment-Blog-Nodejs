@@ -214,3 +214,20 @@
  *              200:
  *                  description: bookmarked successfully
  */
+
+/**
+ * @swagger
+ *  /api/post/slug/{slug}:
+ *      get:
+ *          tags: [Post]
+ *          summary: slug post
+ *          description: get post by slug
+ *          parameters:
+ *              -   name: slug
+ *                  in: path
+ *                  type: string
+ *                  description: slug of post
+ *          responses:
+ *              200:
+ *                  description: getPostBySlug Successfully
+ */
